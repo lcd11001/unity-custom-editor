@@ -19,10 +19,10 @@ namespace Sandbox.Runtime
                     if (_instance == null)
                     {
                         _instance = CreateInstance<SandboxSettings>();
-                    }
 #if UNITY_EDITOR
-                    UnityEditor.AssetDatabase.CreateAsset(_instance, $"Assets/Sandbox/Data/Resources/{assetName}.asset");
+                        UnityEditor.AssetDatabase.CreateAsset(_instance, $"Assets/Sandbox/Data/Resources/{assetName}.asset");
 #endif
+                    }
                 }
                 return _instance;
             }

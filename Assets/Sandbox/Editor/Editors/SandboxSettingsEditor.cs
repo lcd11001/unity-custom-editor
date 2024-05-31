@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using Sandbox.Runtime;
 using UnityEditor;
 using UnityEditor.UIElements;
@@ -52,9 +53,22 @@ namespace Sandbox.Editor.Editors
         #endregion
 
         #region Compose
+
+        private String editorTitle
+        {
+            get
+            {
+                var title = nameof(SandboxSettings);
+                // https://regexr.com/
+                // split words
+                title = Regex.Replace(title, "([a-z])([A-Z])", "$1 $2");
+                return title;
+            }
+        }
+
         private void Compose()
         {
-            root.Add(new Label("Sandbox Settings"));
+            root.Add(new Label(editorTitle));
             root.Add(fieldTestString);
             root.Add(fieldTestInt);
             root.Add(fieldTestFloat);
