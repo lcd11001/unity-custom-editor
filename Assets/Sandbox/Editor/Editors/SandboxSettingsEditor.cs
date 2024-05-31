@@ -7,9 +7,13 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using Doozy.Runtime.UIElements.Extensions;
+using Doozy.Editor.UIElements;
+using Sandbox.Runtime.Utils;
+
 
 
 #if USE_DOZZY
+using Doozy.Editor.EditorUI;
 using Doozy.Editor.EditorUI.Components;
 #endif
 
@@ -66,21 +70,9 @@ namespace Sandbox.Editor.Editors
 
         #region Compose
 
-        private String editorTitle
-        {
-            get
-            {
-                var title = nameof(SandboxSettings);
-                // https://regexr.com/
-                // split words
-                title = Regex.Replace(title, "([a-z])([A-Z])", "$1 $2");
-                return title;
-            }
-        }
-
         private void Compose()
         {
-            root.Add(new Label(editorTitle));
+            root.Add(new Label(SandboxUtils.GetWords(nameof(SandboxSettings))));
             root.Add(fieldTestString);
             root.Add(fieldTestInt);
             root.Add(fieldTestFloat);
@@ -91,19 +83,57 @@ namespace Sandbox.Editor.Editors
 #if USE_DOZZY
         // require Doozy package
         private FluidComponentHeader fluidHeader { get; set; }
+        private FluidField fluidTestString { get; set; }
+        private FluidField fluidTestInt { get; set; }
+        private FluidField fluidTestFloat { get; set; }
 
         private void InitializeEditorWithDozzy()
         {
             root = new VisualElement();
 
             fluidHeader = FluidComponentHeader.Get()
-                .SetComponentNameText(editorTitle);
+                .SetComponentNameText(SandboxUtils.GetWords(nameof(SandboxSettings)))
+                .SetIcon(EditorSpriteSheets.EditorUI.Icons.Settings)
+                .SetAccentColor(EditorColors.EditorUI.DeepPurple);
+
+            fluidTestString = FluidField.Get()
+                .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestString)))
+                .AddFieldContent(new TextField()
+                    .BindToProperty(propertyTestString)
+                    .ResetLayout()
+                    .SetStyleFlexGrow(1)
+                    .SetTooltip($"{propertyTestString.propertyPath} ({propertyTestString.propertyType})")
+                );
+
+            fluidTestInt = FluidField.Get()
+                .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestInt)))
+                .AddFieldContent(new IntegerField()
+                    .BindToProperty(propertyTestInt)
+                    .ResetLayout()
+                    .SetStyleFlexGrow(1)
+                    .SetTooltip($"{propertyTestInt.propertyPath} ({propertyTestInt.propertyType})")
+                );
+
+            fluidTestFloat = FluidField.Get()
+                .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestFloat)))
+                .AddFieldContent(new FloatField()
+                    .BindToProperty(propertyTestFloat)
+                    .ResetLayout()
+                    .SetStyleFlexGrow(1)
+                    .SetTooltip($"{propertyTestFloat.propertyPath} ({propertyTestFloat.propertyType})")
+                );
         }
 
         private void ComposeWithDozzy()
         {
             root
-                .AddChild(fluidHeader);
+                .AddChild(fluidHeader)
+                .AddSpaceBlock(3)
+                .AddChild(fluidTestString)
+                .AddSpaceBlock(1)
+                .AddChild(fluidTestInt)
+                .AddSpaceBlock(1)
+                .AddChild(fluidTestFloat);
         }
 #endif
         #endregion
