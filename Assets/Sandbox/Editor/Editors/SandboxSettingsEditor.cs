@@ -40,6 +40,12 @@ namespace Sandbox.Editor.Editors
             return root;
         }
 
+        private void Save()
+        {
+            EditorUtility.SetDirty(target);
+            AssetDatabase.SaveAssetIfDirty(target);
+        }
+
         #region Serialized Properties
         private SerializedProperty propertyTestString { get; set; }
         private SerializedProperty propertyTestInt { get; set; }
@@ -78,6 +84,7 @@ namespace Sandbox.Editor.Editors
             root.Add(fieldTestString);
             root.Add(fieldTestInt);
             root.Add(fieldTestFloat);
+            root.Add(new Button(Save) { text = "Save" });
         }
         #endregion
 
@@ -102,13 +109,17 @@ namespace Sandbox.Editor.Editors
                 .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestString)))
                 .AddFieldContent(
                     DesignUtils.row
-                        .AddChild(DesignUtils
+                        .AddChild
+                        (
+                            DesignUtils
                             .NewTextField(propertyTestString)
                             .SetStyleFlexGrow(1)
                             .SetTooltip($"{propertyTestString.propertyPath} ({propertyTestString.propertyType})")
                         )
                         .AddSpaceBlock(2)
-                        .AddChild(GetResetButton(() =>
+                        .AddChild
+                        (
+                            GetResetButton(() =>
                             {
                                 propertyTestString.stringValue = SandboxSettings.k_TestStringDefaultValue;
                                 serializedObject.ApplyModifiedProperties();
@@ -139,7 +150,10 @@ namespace Sandbox.Editor.Editors
                 .SetStyleFlexBasis(1)
                 .AddFieldContent(
                     DesignUtils.row
-                        .AddChild(DesignUtils.NewIntegerField(propertyTestInt)
+                        .AddChild
+                        (
+                            DesignUtils
+                            .NewIntegerField(propertyTestInt)
                             .SetStyleFlexGrow(1)
                             .SetTooltip($"{propertyTestInt.propertyPath} ({propertyTestInt.propertyType})")
                         )
@@ -148,7 +162,9 @@ namespace Sandbox.Editor.Editors
                         .AddSpaceBlock(1)
                         .AddChild(decreaseIntValueButton)
                         .AddSpaceBlock(2)
-                        .AddChild(GetResetButton(() =>
+                        .AddChild
+                        (
+                            GetResetButton(() =>
                             {
                                 propertyTestInt.intValue = SandboxSettings.k_TestIntDefaultValue;
                                 serializedObject.ApplyModifiedProperties();
@@ -163,13 +179,17 @@ namespace Sandbox.Editor.Editors
                 .SetStyleFlexBasis(1)
                 .AddFieldContent(
                     DesignUtils.row
-                        .AddChild(DesignUtils
+                        .AddChild
+                        (
+                            DesignUtils
                             .NewFloatField(propertyTestFloat)
                             .SetStyleFlexGrow(1)
                             .SetTooltip($"{propertyTestFloat.propertyPath} ({propertyTestFloat.propertyType})")
                         )
                         .AddSpaceBlock(2)
-                        .AddChild(GetResetButton(() =>
+                        .AddChild
+                        (
+                            GetResetButton(() =>
                             {
                                 propertyTestFloat.floatValue = SandboxSettings.k_TestFloatDefaultValue;
                                 serializedObject.ApplyModifiedProperties();
@@ -191,6 +211,13 @@ namespace Sandbox.Editor.Editors
             GetSmallButton(EditorSpriteSheets.EditorUI.Icons.Reset)
             .SetOnClick(callback);
 
+        private static FluidButton GetButton(string text, UnityAction callback) => FluidButton
+            .Get()
+            .SetButtonStyle(ButtonStyle.Outline)
+            .SetElementSize(ElementSize.Normal)
+            .SetLabelText(text)
+            .SetOnClick(callback);
+
         private void ComposeWithDozzy()
         {
             root
@@ -198,12 +225,28 @@ namespace Sandbox.Editor.Editors
                 .AddSpaceBlock(3)
                 .AddChild(fluidTestString)
                 .AddSpaceBlock(1)
-                .AddChild(
+                .AddChild
+                (
                     DesignUtils.row
-                        .AddChild(fluidTestInt)
-                        .AddSpaceBlock(1)
-                        .AddChild(fluidTestFloat)
-                );
+                    .AddChild(fluidTestInt)
+                    .AddSpaceBlock(1)
+                    .AddChild(fluidTestFloat)
+                )
+                .AddSpaceBlock(3)
+                .AddChild
+                (
+                    DesignUtils.row
+                    .AddFlexibleSpace()
+                    .AddChild
+                    (
+                        GetButton("Save", Save)
+                        .SetTooltip("Save the changes to asset file")
+                        .SetIcon(EditorSpriteSheets.EditorUI.Icons.Save)
+                        .SetAccentColor(EditorSelectableColors.Default.Add)
+                    )
+                    .AddFlexibleSpace()
+                )
+                ;
         }
 
         #endregion
