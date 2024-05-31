@@ -8,6 +8,8 @@ using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using Sandbox.Runtime.Utils;
 using UnityEngine;
+using UnityEngine.Events;
+
 
 
 #if USE_DOZZY
@@ -98,9 +100,21 @@ namespace Sandbox.Editor.Editors
 
             fluidTestString = FluidField.Get()
                 .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestString)))
-                .AddFieldContent(DesignUtils.NewTextField(propertyTestString)
-                    .SetStyleFlexGrow(1)
-                    .SetTooltip($"{propertyTestString.propertyPath} ({propertyTestString.propertyType})")
+                .AddFieldContent(
+                    DesignUtils.row
+                        .AddChild(DesignUtils
+                            .NewTextField(propertyTestString)
+                            .SetStyleFlexGrow(1)
+                            .SetTooltip($"{propertyTestString.propertyPath} ({propertyTestString.propertyType})")
+                        )
+                        .AddSpaceBlock(2)
+                        .AddChild(GetResetButton(() =>
+                            {
+                                propertyTestString.stringValue = SandboxSettings.k_TestStringDefaultValue;
+                                serializedObject.ApplyModifiedProperties();
+                            })
+                            .SetTooltip("Reset to default string value")
+                        )
                 );
 
             var increaseIntValueButton = GetSmallButton(EditorSpriteSheets.EditorUI.Icons.Plus)
@@ -125,23 +139,43 @@ namespace Sandbox.Editor.Editors
                 .SetStyleFlexBasis(1)
                 .AddFieldContent(
                     DesignUtils.row
-                        .AddChild(decreaseIntValueButton)
-                        .AddSpaceBlock(1)
                         .AddChild(DesignUtils.NewIntegerField(propertyTestInt)
                             .SetStyleFlexGrow(1)
                             .SetTooltip($"{propertyTestInt.propertyPath} ({propertyTestInt.propertyType})")
                         )
                         .AddSpaceBlock(1)
                         .AddChild(increaseIntValueButton)
+                        .AddSpaceBlock(1)
+                        .AddChild(decreaseIntValueButton)
+                        .AddSpaceBlock(2)
+                        .AddChild(GetResetButton(() =>
+                            {
+                                propertyTestInt.intValue = SandboxSettings.k_TestIntDefaultValue;
+                                serializedObject.ApplyModifiedProperties();
+                            })
+                            .SetTooltip("Reset to default int value")
+                        )
                 );
 
             fluidTestFloat = FluidField.Get()
                 .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestFloat)))
                 .SetStyleFlexGrow(1)
                 .SetStyleFlexBasis(1)
-                .AddFieldContent(DesignUtils.NewFloatField(propertyTestFloat)
-                    .SetStyleFlexGrow(1)
-                    .SetTooltip($"{propertyTestFloat.propertyPath} ({propertyTestFloat.propertyType})")
+                .AddFieldContent(
+                    DesignUtils.row
+                        .AddChild(DesignUtils
+                            .NewFloatField(propertyTestFloat)
+                            .SetStyleFlexGrow(1)
+                            .SetTooltip($"{propertyTestFloat.propertyPath} ({propertyTestFloat.propertyType})")
+                        )
+                        .AddSpaceBlock(2)
+                        .AddChild(GetResetButton(() =>
+                            {
+                                propertyTestFloat.floatValue = SandboxSettings.k_TestFloatDefaultValue;
+                                serializedObject.ApplyModifiedProperties();
+                            })
+                            .SetTooltip("Reset to default float value")
+                        )
                 );
         }
 
@@ -152,6 +186,10 @@ namespace Sandbox.Editor.Editors
             .SetStyleFlexShrink(0)
             .SetAccentColor(EditorSelectableColors.Default.Action)
             .SetIcon(icons);
+
+        private static FluidButton GetResetButton(UnityAction callback) =>
+            GetSmallButton(EditorSpriteSheets.EditorUI.Icons.Reset)
+            .SetOnClick(callback);
 
         private void ComposeWithDozzy()
         {
