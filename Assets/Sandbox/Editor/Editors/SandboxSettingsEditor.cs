@@ -6,15 +6,13 @@ using Sandbox.Runtime;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
-using Doozy.Runtime.UIElements.Extensions;
-using Doozy.Editor.UIElements;
 using Sandbox.Runtime.Utils;
 
-
-
 #if USE_DOZZY
+using Doozy.Runtime.UIElements.Extensions;
 using Doozy.Editor.EditorUI;
 using Doozy.Editor.EditorUI.Components;
+using Doozy.Editor.EditorUI.Utils;
 #endif
 
 namespace Sandbox.Editor.Editors
@@ -98,27 +96,21 @@ namespace Sandbox.Editor.Editors
 
             fluidTestString = FluidField.Get()
                 .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestString)))
-                .AddFieldContent(new TextField()
-                    .BindToProperty(propertyTestString)
-                    .ResetLayout()
+                .AddFieldContent(DesignUtils.NewTextField(propertyTestString)
                     .SetStyleFlexGrow(1)
                     .SetTooltip($"{propertyTestString.propertyPath} ({propertyTestString.propertyType})")
                 );
 
             fluidTestInt = FluidField.Get()
                 .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestInt)))
-                .AddFieldContent(new IntegerField()
-                    .BindToProperty(propertyTestInt)
-                    .ResetLayout()
+                .AddFieldContent(DesignUtils.NewIntegerField(propertyTestInt)
                     .SetStyleFlexGrow(1)
                     .SetTooltip($"{propertyTestInt.propertyPath} ({propertyTestInt.propertyType})")
                 );
 
             fluidTestFloat = FluidField.Get()
                 .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestFloat)))
-                .AddFieldContent(new FloatField()
-                    .BindToProperty(propertyTestFloat)
-                    .ResetLayout()
+                .AddFieldContent(DesignUtils.NewFloatField(propertyTestFloat)
                     .SetStyleFlexGrow(1)
                     .SetTooltip($"{propertyTestFloat.propertyPath} ({propertyTestFloat.propertyType})")
                 );

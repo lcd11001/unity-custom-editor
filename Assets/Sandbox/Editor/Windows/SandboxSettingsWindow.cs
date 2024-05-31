@@ -11,8 +11,31 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+#if USE_DOZZY
+using Doozy.Editor.EditorUI.Windows.Internal;
+using Doozy.Editor.UIElements;
+#endif
+
 namespace Sandbox.Editor.Windows
 {
+#if USE_DOZZY
+    public class SandboxSettingsWindow : FluidWindow<SandboxSettingsWindow>
+    {
+        [MenuItem("Sandbox/Settings")]
+        public static void Open() => InternalOpenWindow(SandboxUtils.GetWords(nameof(SandboxSettingsWindow)));
+
+        protected override void CreateGUI()
+        {
+            root.RecycleAndClear();
+
+            var editor = (SandboxSettingsEditor)UnityEditor.Editor.CreateEditor(SandboxSettings.Instance);
+            var editorRoot = editor.CreateInspectorGUI();
+            editorRoot.Bind(editor.serializedObject);
+
+            root.Add(editorRoot);
+        }
+    }
+#else
     public class SandboxSettingsWindow : UnityEditor.EditorWindow
     {
         private VisualElement root => rootVisualElement;
@@ -37,4 +60,5 @@ namespace Sandbox.Editor.Windows
             root.Add(editorRoot);
         }
     }
+#endif
 }
