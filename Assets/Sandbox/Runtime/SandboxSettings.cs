@@ -28,6 +28,33 @@ namespace Sandbox.Runtime
             }
         }
 
+        private static string GetKey(string key) => $"{nameof(SandboxSettings)}_{key}";
+
+        private static string GetString(string key) => PlayerPrefs.GetString(GetKey(key), _instance.TestString);
+        private static void SetString(string key, string value) => PlayerPrefs.SetString(GetKey(key), value);
+
+        private static int GetInt(string key) => PlayerPrefs.GetInt(GetKey(key), _instance.TestInt);
+        private static void SetInt(string key, int value) => PlayerPrefs.SetInt(GetKey(key), value);
+
+        private static float GetFloat(string key) => PlayerPrefs.GetFloat(GetKey(key), _instance.TestFloat);
+        private static void SetFloat(string key, float value) => PlayerPrefs.SetFloat(GetKey(key), value);
+
+        public static void Save()
+        {
+            SetString(nameof(TestString), _instance.TestString);
+            SetInt(nameof(TestInt), _instance.TestInt);
+            SetFloat(nameof(TestFloat), _instance.TestFloat);
+            PlayerPrefs.Save();
+        }
+
+        public static void Load()
+        {
+            _instance.TestString = GetString(nameof(TestString));
+            _instance.TestInt = GetInt(nameof(TestInt));
+            _instance.TestFloat = GetFloat(nameof(TestFloat));
+
+        }
+
         public string TestString = "Hello World";
         public int TestInt = 42;
         public float TestFloat = 3.14f;
