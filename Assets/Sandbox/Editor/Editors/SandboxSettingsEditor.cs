@@ -6,6 +6,12 @@ using Sandbox.Runtime;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
+using Doozy.Runtime.UIElements.Extensions;
+
+
+#if USE_DOZZY
+using Doozy.Editor.EditorUI.Components;
+#endif
 
 namespace Sandbox.Editor.Editors
 {
@@ -16,8 +22,14 @@ namespace Sandbox.Editor.Editors
         public override VisualElement CreateInspectorGUI()
         {
             FindSerializedProperties();
+
+#if USE_DOZZY
+            InitializeEditorWithDozzy();
+            ComposeWithDozzy();
+#else
             InitializeEditor();
             Compose();
+#endif
 
             return root;
         }
@@ -73,6 +85,27 @@ namespace Sandbox.Editor.Editors
             root.Add(fieldTestInt);
             root.Add(fieldTestFloat);
         }
+        #endregion
+
+        #region Dozzy
+#if USE_DOZZY
+        // require Doozy package
+        private FluidComponentHeader fluidHeader { get; set; }
+
+        private void InitializeEditorWithDozzy()
+        {
+            root = new VisualElement();
+
+            fluidHeader = FluidComponentHeader.Get()
+                .SetComponentNameText(editorTitle);
+        }
+
+        private void ComposeWithDozzy()
+        {
+            root
+                .AddChild(fluidHeader);
+        }
+#endif
         #endregion
 
     }
