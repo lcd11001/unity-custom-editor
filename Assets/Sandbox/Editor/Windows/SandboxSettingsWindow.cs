@@ -11,9 +11,11 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
+
 #if USE_DOZZY
 using Doozy.Editor.EditorUI.Windows.Internal;
 using Doozy.Editor.UIElements;
+using Doozy.Editor.EditorUI.Utils;
 #endif
 
 namespace Sandbox.Editor.Windows
@@ -31,6 +33,10 @@ namespace Sandbox.Editor.Windows
             var editor = (SandboxSettingsEditor)UnityEditor.Editor.CreateEditor(SandboxSettings.Instance);
             var editorRoot = editor.CreateInspectorGUI();
             editorRoot.Bind(editor.serializedObject);
+
+            editor
+                .HideHeader()
+                .SetRootPadding(DesignUtils.k_Spacing2X);
 
             root.Add(editorRoot);
         }

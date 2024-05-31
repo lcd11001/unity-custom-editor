@@ -7,6 +7,8 @@ using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine.UIElements;
 using Sandbox.Runtime.Utils;
+using UnityEngine;
+
 
 #if USE_DOZZY
 using Doozy.Runtime.UIElements.Extensions;
@@ -77,8 +79,8 @@ namespace Sandbox.Editor.Editors
         }
         #endregion
 
-        #region Dozzy
 #if USE_DOZZY
+        #region Dozzy
         // require Doozy package
         private FluidComponentHeader fluidHeader { get; set; }
         private FluidField fluidTestString { get; set; }
@@ -87,7 +89,7 @@ namespace Sandbox.Editor.Editors
 
         private void InitializeEditorWithDozzy()
         {
-            root = new VisualElement();
+            root = DesignUtils.editorRoot;
 
             fluidHeader = FluidComponentHeader.Get()
                 .SetComponentNameText(SandboxUtils.GetWords(nameof(SandboxSettings)))
@@ -101,20 +103,55 @@ namespace Sandbox.Editor.Editors
                     .SetTooltip($"{propertyTestString.propertyPath} ({propertyTestString.propertyType})")
                 );
 
+            var increaseIntValueButton = GetSmallButton(EditorSpriteSheets.EditorUI.Icons.Plus)
+                .SetAccentColor(EditorSelectableColors.Default.Add)
+                .SetOnClick(() =>
+                {
+                    propertyTestInt.intValue++;
+                    serializedObject.ApplyModifiedProperties();
+                });
+
+            var decreaseIntValueButton = GetSmallButton(EditorSpriteSheets.EditorUI.Icons.Minus)
+                .SetAccentColor(EditorSelectableColors.Default.Remove)
+                .SetOnClick(() =>
+                {
+                    propertyTestInt.intValue--;
+                    serializedObject.ApplyModifiedProperties();
+                });
+
             fluidTestInt = FluidField.Get()
                 .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestInt)))
-                .AddFieldContent(DesignUtils.NewIntegerField(propertyTestInt)
-                    .SetStyleFlexGrow(1)
-                    .SetTooltip($"{propertyTestInt.propertyPath} ({propertyTestInt.propertyType})")
+                .SetStyleFlexGrow(1)
+                .SetStyleFlexBasis(1)
+                .AddFieldContent(
+                    DesignUtils.row
+                        .AddChild(decreaseIntValueButton)
+                        .AddSpaceBlock(1)
+                        .AddChild(DesignUtils.NewIntegerField(propertyTestInt)
+                            .SetStyleFlexGrow(1)
+                            .SetTooltip($"{propertyTestInt.propertyPath} ({propertyTestInt.propertyType})")
+                        )
+                        .AddSpaceBlock(1)
+                        .AddChild(increaseIntValueButton)
                 );
 
             fluidTestFloat = FluidField.Get()
                 .SetLabelText(SandboxUtils.GetWords(nameof(SandboxSettings.TestFloat)))
+                .SetStyleFlexGrow(1)
+                .SetStyleFlexBasis(1)
                 .AddFieldContent(DesignUtils.NewFloatField(propertyTestFloat)
                     .SetStyleFlexGrow(1)
                     .SetTooltip($"{propertyTestFloat.propertyPath} ({propertyTestFloat.propertyType})")
                 );
         }
+
+        private static FluidButton GetSmallButton(List<Texture2D> icons) => FluidButton
+            .Get()
+            .SetButtonStyle(ButtonStyle.Contained)
+            .SetElementSize(ElementSize.Tiny)
+            .SetStyleFlexShrink(0)
+            .SetAccentColor(EditorSelectableColors.Default.Action)
+            .SetIcon(icons);
 
         private void ComposeWithDozzy()
         {
@@ -123,12 +160,38 @@ namespace Sandbox.Editor.Editors
                 .AddSpaceBlock(3)
                 .AddChild(fluidTestString)
                 .AddSpaceBlock(1)
-                .AddChild(fluidTestInt)
-                .AddSpaceBlock(1)
-                .AddChild(fluidTestFloat);
+                .AddChild(
+                    DesignUtils.row
+                        .AddChild(fluidTestInt)
+                        .AddSpaceBlock(1)
+                        .AddChild(fluidTestFloat)
+                );
         }
-#endif
+
         #endregion
+
+        #region Chaining Methods
+
+        public SandboxSettingsEditor HideHeader()
+        {
+            fluidHeader.Hide();
+            return this;
+        }
+
+        public SandboxSettingsEditor ShowHeader()
+        {
+            fluidHeader.Show();
+            return this;
+        }
+
+        public SandboxSettingsEditor SetRootPadding(float value)
+        {
+            root.SetStylePadding(value);
+            return this;
+        }
+
+        #endregion
+#endif
 
     }
 }
